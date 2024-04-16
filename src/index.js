@@ -16,6 +16,9 @@ app.use('/greeting', greetingRouter);
 const videoHlsRouter = require('./routes/videoHls');
 app.use('/video-hls', videoHlsRouter);
 
+const authRouter = require('./routes/auth');
+app.use('/auth', authRouter);
+
 const port = 3000;
 app.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
