@@ -19,6 +19,9 @@ app.use('/video-hls', videoHlsRouter);
 const authRouter = require('./routes/auth');
 app.use('/auth', authRouter);
 
+const mp4ToHlsRouter = require('./routes/mp4ToHls');
+app.use('/mp4-to-hls', mp4ToHlsRouter);
+
 const port = 3000;
 app.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
