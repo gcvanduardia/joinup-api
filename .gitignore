@@ -28,3 +28,7 @@ npm-debug.log*
 # Sistemas operativos
 .DS_Store
 Thumbs.db
+
+# resultados de conversiones de archivos
+/output
+/uploads

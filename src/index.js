@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 require('dotenv').config();
-/* require('./config/database'); */
+require('./config/database');
 /* const apiKeyVerify = require('./middleware/apiKey'); */
 
 const app = express();
@@ -18,6 +18,9 @@ app.use('/video-hls', videoHlsRouter);
 
 const authRouter = require('./routes/auth');
 app.use('/auth', authRouter);
+
+const mp4ToHlsRouter = require('./routes/mp4ToHls');
+app.use('/mp4-to-hls', mp4ToHlsRouter);
 
 const port = 3000;
 app.listen(port, () => {
