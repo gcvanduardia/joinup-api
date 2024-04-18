@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 require('dotenv').config();
-/* require('./config/database'); */
+require('./config/database');
 /* const apiKeyVerify = require('./middleware/apiKey'); */
 
 const app = express();
