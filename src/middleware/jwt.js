@@ -1,28 +1,21 @@
 const jwt = require('jsonwebtoken');
 
-const verifyToken = (req, res, next) => {
-    const token = req.headers['authorization'];
-
+const verifyToken = (token) => {
     if (!token) {
-        return res.status(403).send('Se requiere un token para autenticación');
+        return false;
     }
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
+        return decoded;
     } catch (err) {
-        return res.status(401).send('Token inválido');
+        return false;
     }
-
-    next();
 };
-
-module.exports = verifyToken;
-
 
 const generateToken = (username) => {
     const token = jwt.sign({ username: username }, process.env.JWT_SECRET, { expiresIn: '5d' });
     return token;
 };
 
-module.exports = generateToken;
+module.exports = { generateToken, verifyToken };

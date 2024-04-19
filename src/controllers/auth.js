@@ -1,5 +1,5 @@
 const sql = require("mssql");
-const jwt = require('jsonwebtoken');
+const { generateToken, verifyToken } = require('../middleware/jwt');
 
 exports.logIn = async (req, res) => {
     const { username, password } = req.body;
@@ -13,7 +13,7 @@ exports.logIn = async (req, res) => {
     request.query(sql_str)
         .then((result) => {
             if (result.recordset[0].count > 0) {
-                const token = jwt.sign({ username: username }, process.env.JWT_SECRET);
+                const token = generateToken(username);
                 res.status(200).json({ 
                     token: token, 
                     username: username, 
@@ -32,4 +32,20 @@ exports.logIn = async (req, res) => {
                 message: 'Error al intentar logearse' 
             });
         });
+}
+
+exports.verifyToken = async (req, res) => {
+    const token = req.headers['authorization'];
+
+    const decoded = verifyToken(token);
+    if (decoded) {
+        res.status(200).json({ 
+            message: 'Token is valid', 
+            data: decoded 
+        });
+    } else {
+        res.status(401).json({ 
+            message: 'Token is not valid'
+        });
+    }
 }
