@@ -6,4 +6,7 @@ const auth = require('../middleware/jwt');
 router.route('/logIn')
     .post(authController.logIn);
 
+router.route('/verifyToken')
+    .get(authController.verifyToken);
+
 module.exports = router;
