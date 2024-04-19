@@ -4,6 +4,6 @@ const authController = require('../controllers/auth');
 const auth = require('../middleware/jwt');
 
 router.route('/logIn')
-    .get(authController.logIn);
+    .post(authController.logIn);
 
 module.exports = router;
