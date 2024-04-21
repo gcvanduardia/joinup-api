@@ -1,5 +1,5 @@
 const sql = require("mssql");
-const { generateToken, verifyToken } = require('../middleware/jwt');
+const { generateToken, verifyToken } = require('../config/jwt');
 
 exports.logIn = async (req, res) => {
     const { username, password } = req.body;
