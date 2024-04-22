@@ -9,4 +9,7 @@ router.route('/logIn')
 router.route('/verifyToken')
     .get(authController.verifyToken);
 
+router.route('/register')
+    .post(authController.register);
+
 module.exports = router;
