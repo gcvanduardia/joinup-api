@@ -8,7 +8,7 @@ const auth = require('../middleware/jwt');
     .post(auth, greetingController.greeting); */
 
 router.route('/')
-    .get(greetingController.greeting)
+    .get(auth,greetingController.greeting)
     .post(greetingController.greeting);
 
 module.exports = router;
