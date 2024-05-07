@@ -16,8 +16,8 @@ const verifyToken = (bearerToken) => {
     }
 };
 
-const generateToken = (username) => {
-    const token = jwt.sign({ username: username }, process.env.JWT_SECRET, { expiresIn: '5d' });
+const generateToken = (IdUsuario) => {
+    const token = jwt.sign({ IdUsuario: IdUsuario }, process.env.JWT_SECRET, { expiresIn: '5d' });
     return token;
 };
 
