@@ -8,15 +8,16 @@ exports.logIn = async (req, res) => {
     // Use parameters to prevent SQL injection
     request.input('username', sql.NVarChar, username);
     request.input('password', sql.NVarChar, password);
-    const sql_str = `SELECT COUNT(*) as count FROM tbl_Users WHERE En=1 AND (Username=@username OR Email=@username) AND Pass=@password`;
+    const sql_str = `SELECT ISNULL( (SELECT IdUsuario FROM Users WHERE Enable=1 AND Email=@username AND Password=@password), 0 ) AS IdUsuario;`;
 
     request.query(sql_str)
         .then((result) => {
-            if (result.recordset[0].count > 0) {
-                const token = generateToken(username);
+            if (result.recordset[0].IdUsuario > 0) {
+                const IdUsuario = result.recordset[0].IdUsuario;
+                const token = generateToken(IdUsuario);
                 res.status(200).json({ 
                     token: token, 
-                    username: username, 
+                    IdUsuario: IdUsuario, 
                     message: 'Usuario logeado correctamente' 
                 });
             } else {
@@ -27,6 +28,7 @@ exports.logIn = async (req, res) => {
             }
         })
         .catch((err) => {
+            console.error('logIn Error: ',err);
             res.status(500).json({ 
                 error: err,
                 message: 'Error al intentar logearse' 
@@ -51,20 +53,20 @@ exports.verifyToken = async (req, res) => {
 }
 
 exports.register = async (req, res) => {
-    const { firstName: nombres, lastName: apellidos, email, document: documento, phone: telefono, password, userName: username } = req.body;
+    const { firstName: nombres, lastName: apellidos, email, document: documento, phone: telefono, password } = req.body;
 
     // Comprueba si todos los campos están definidos
-    if (!nombres || !apellidos || !email || !documento || !telefono || !password || !username) {
+    if (!nombres || !apellidos || !email || !documento || !telefono || !password) {
         return res.status(400).json({ message: 'Todos los campos son requeridos' });
     }
 
     const request = new sql.Request();
 
     // Primero, verifica si el usuario ya existe
-    const checkUserQuery = `SELECT * FROM tbl_Users WHERE Email = @email OR Documento = @documento`;
+    const checkUserQuery = `SELECT * FROM Users WHERE Email = @email OR Documento = @documento`;
 
     request.input('email', sql.NVarChar, email);
-    request.input('documento', sql.BigInt, documento);
+    request.input('documento', sql.NVarChar, documento);
     
     request.query(checkUserQuery)
         .then(result => {
@@ -75,11 +77,10 @@ exports.register = async (req, res) => {
                 // Si el usuario no existe, procede a insertarlo en la base de datos
                 request.input('nombres', sql.NVarChar, nombres);
                 request.input('apellidos', sql.NVarChar, apellidos);
-                request.input('celular', sql.BigInt, telefono);
+                request.input('celular', sql.NVarChar, telefono);
                 request.input('pass', sql.NVarChar, password);
-                request.input('username', sql.NVarChar, username);
 
-                const sql_str = `INSERT INTO tbl_Users (Nombres, Apellidos, Email, Documento, Celular, Pass, Username) VALUES (@nombres, @apellidos, @email, @documento, @celular, @pass, @username)`;
+                const sql_str = `INSERT INTO Users (IdUsuario, Nombres, Apellidos, Email, Documento, Celular, Password, Enable) VALUES ((SELECT MAX(IdUsuario)+1 FROM Users),@nombres, @apellidos, @email, @documento, @celular, @pass, 1)`;
 
                 request.query(sql_str)
                     .then(() => {
@@ -88,7 +89,7 @@ exports.register = async (req, res) => {
                         });
                     })
                     .catch((err) => {
-                        console.log(err)
+                        console.log('Error register: ', err)
                         res.status(500).json({ 
                             error: err,
                             message: 'Error al intentar registrar al usuario' 
@@ -97,7 +98,7 @@ exports.register = async (req, res) => {
             }
         })
         .catch(err => {
-            console.error(err);
+            console.error('Error register: ',err);
             res.status(500).json({ 
                 error: err,
                 message: 'Error al intentar verificar al usuario' 
