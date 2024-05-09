@@ -8,7 +8,7 @@ exports.dataIni = async (req, res) => {
     request.query(sql_str)
         .then((result) => {
             res.status(200).json({ 
-                data: result.recordset,
+                data: result.recordset[0],
                 message: 'Datos obtenidos correctamente' 
             });
         })
