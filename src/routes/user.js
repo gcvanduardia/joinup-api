@@ -4,9 +4,9 @@ const userController = require('../controllers/user');
 const auth = require('../middleware/jwt');
 
 router.route('/historialCursos')
-    .post(auth, userController.historialCursos);
+    .get(auth, userController.historialCursos);
 
 router.route('/dataIni')
-    .post(auth, userController.dataIni);   
+    .get(auth, userController.dataIni);   
 
 module.exports = router;

@@ -1,7 +1,7 @@
 const sql = require("mssql");
 
 exports.dataIni = async (req, res) => {
-    const { IdUsuario } = req.body;
+    const { IdUsuario } = req.query;
     const request = new sql.Request();
     request.input('IdUsuario', sql.Int, IdUsuario);
     const sql_str = `SELECT * FROM vw_UsuarioDatosIniciales WHERE IdUsuario=@IdUsuario`;
@@ -22,7 +22,7 @@ exports.dataIni = async (req, res) => {
 };
 
 exports.historialCursos = async (req, res) => {
-    const { IdUsuario } = req.body;
+    const { IdUsuario } = req.query;
     const request = new sql.Request();
     request.input('IdUsuario', sql.Int, IdUsuario);
     const sql_str = `SELECT * FROM vw_UsuarioHistorialCursos WHERE IdUsuario=@IdUsuario`;
