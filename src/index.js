@@ -10,6 +10,9 @@ app.use(cors());
 app.use(bodyParser.json());
 /* app.use(apiKeyVerify); */
 
+const cursosRouter = require('./routes/cursos');
+app.use('/cursos', cursosRouter);
+
 const userRouter = require('./routes/user');
 app.use('/user', userRouter);
 
