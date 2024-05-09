@@ -46,7 +46,7 @@ exports.getCursoDetail = async (req, res) => {
     request.query(sql_str)
         .then((result) => {
             res.status(200).json({ 
-                data: result.recordset,
+                data: result.recordset[0],
                 message: 'Detalle del curso obtenido correctamente' 
             });
         })
@@ -104,7 +104,7 @@ exports.getDetalleSesion = async (req, res) => {
     request.query(sql_str)
         .then((result) => {
             res.status(200).json({ 
-                data: result.recordset,
+                data: result.recordset[0],
                 message: 'Detalle de la sesión obtenido correctamente' 
             });
         })
