@@ -31,6 +31,36 @@ exports.getCursosPaginated = async (req, res) => {
         });
 };
 
+exports.buscarCursos = async (req, res) => {
+    const { terminoBusqueda } = req.query;
+
+    if (!terminoBusqueda) {
+        return res.status(400).json({ message: 'terminoBusqueda es requerido' });
+    }
+
+    const request = new sql.Request();
+    request.input('TerminoBusqueda', sql.NVarChar, terminoBusqueda);
+    const sql_str = `
+        SELECT * FROM vw_EncabezadoCursos 
+        WHERE Nombre COLLATE SQL_Latin1_General_CP1_CI_AI 
+        LIKE '%' + @TerminoBusqueda COLLATE SQL_Latin1_General_CP1_CI_AI + '%';
+    `;
+    request.query(sql_str)
+        .then((result) => {
+            res.status(200).json({ 
+                data: result.recordset,
+                message: 'Resultados de la búsqueda obtenidos correctamente' 
+            });
+        })
+        .catch((err) => {
+            console.error('buscarCursos Error: ',err);
+            res.status(500).json({ 
+                error: err,
+                message: 'Error al intentar realizar la búsqueda' 
+            });
+        });
+};
+
 exports.getCursoDetail = async (req, res) => {
     const { cursoId } = req.query;
 
