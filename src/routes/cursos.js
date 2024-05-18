@@ -21,4 +21,7 @@ router.route('/getCursosPaginated')
 router.route('/getCursoDetail')
     .get(auth, cursosController.getCursoDetail);
 
+router.route('/getListadoCursos')
+    .get(auth, cursosController.buscarCursos);
+
 module.exports = router;
