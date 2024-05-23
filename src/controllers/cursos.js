@@ -32,6 +32,43 @@ exports.getCursosPaginated = async (req, res) => {
 };
 
 exports.buscarCursos = async (req, res) => {
+    const terminoBusqueda = req.query.terminoBusqueda || '';
+    const pageNumber = req.query.pageNumber || 1;
+    const pageSize = req.query.pageSize || 10;   
+
+    if (!terminoBusqueda) {
+        return res.status(400).json({ message: 'terminoBusqueda es requerido' });
+    }
+
+    const request = new sql.Request();
+    request.input('TerminoBusqueda', sql.NVarChar, terminoBusqueda);
+    request.input('PageNumber', sql.Int, pageNumber);
+    request.input('PageSize', sql.Int, pageSize);
+    const sql_str = `
+        SELECT CursoId, Nombre, Imagen, NombreProfesor, ApellidoProfesor FROM vw_EncabezadoCursos 
+        WHERE KeyBusqueda COLLATE SQL_Latin1_General_CP1_CI_AI 
+        LIKE '%' + @TerminoBusqueda COLLATE SQL_Latin1_General_CP1_CI_AI + '%' 
+        ORDER BY CHARINDEX(@TerminoBusqueda, KeyBusqueda COLLATE Latin1_General_CI_AI), KeyBusqueda
+        OFFSET (@PageNumber - 1) * @PageSize ROWS 
+        FETCH NEXT @PageSize ROWS ONLY;
+    `;
+    request.query(sql_str)
+        .then((result) => {
+            res.status(200).json({ 
+                data: result.recordset,
+                message: 'Resultados de la búsqueda obtenidos correctamente' 
+            });
+        })
+        .catch((err) => {
+            console.error('buscarCursos Error: ',err);
+            res.status(500).json({ 
+                error: err,
+                message: 'Error al intentar realizar la búsqueda' 
+            });
+        });
+};
+
+exports.buscarCursosToolBar = async (req, res) => {
     const { terminoBusqueda } = req.query;
 
     if (!terminoBusqueda) {
@@ -41,9 +78,10 @@ exports.buscarCursos = async (req, res) => {
     const request = new sql.Request();
     request.input('TerminoBusqueda', sql.NVarChar, terminoBusqueda);
     const sql_str = `
-        SELECT CursoId, Nombre, Descripcion, Imagen, Profesor FROM vw_KeyBusqueda 
+        SELECT top 5 CursoId, Nombre, Descripcion, Imagen, Profesor FROM vw_KeyBusqueda 
         WHERE KeyBusqueda COLLATE SQL_Latin1_General_CP1_CI_AI 
         LIKE '%' + @TerminoBusqueda COLLATE SQL_Latin1_General_CP1_CI_AI + '%'
+        ORDER BY CHARINDEX(@TerminoBusqueda, KeyBusqueda COLLATE Latin1_General_CI_AI), KeyBusqueda
     `;
     request.query(sql_str)
         .then((result) => {
