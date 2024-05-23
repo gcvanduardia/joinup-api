@@ -41,9 +41,9 @@ exports.buscarCursos = async (req, res) => {
     const request = new sql.Request();
     request.input('TerminoBusqueda', sql.NVarChar, terminoBusqueda);
     const sql_str = `
-        SELECT * FROM vw_EncabezadoCursos 
-        WHERE Nombre COLLATE SQL_Latin1_General_CP1_CI_AI 
-        LIKE '%' + @TerminoBusqueda COLLATE SQL_Latin1_General_CP1_CI_AI + '%';
+        SELECT CursoId, Nombre, Descripcion, Imagen, Profesor FROM vw_KeyBusqueda 
+        WHERE KeyBusqueda COLLATE SQL_Latin1_General_CP1_CI_AI 
+        LIKE '%' + @TerminoBusqueda COLLATE SQL_Latin1_General_CP1_CI_AI + '%'
     `;
     request.query(sql_str)
         .then((result) => {
