@@ -45,7 +45,7 @@ exports.buscarCursos = async (req, res) => {
     request.input('PageNumber', sql.Int, pageNumber);
     request.input('PageSize', sql.Int, pageSize);
     const sql_str = `
-        SELECT CursoId, Nombre, Imagen, NombreProfesor, ApellidoProfesor FROM vw_EncabezadoCursos 
+        SELECT CursoId, Nombre, Imagen, NombreProfesor, ApellidoProfesor, Descripcion FROM vw_EncabezadoCursos 
         WHERE KeyBusqueda COLLATE SQL_Latin1_General_CP1_CI_AI 
         LIKE '%' + @TerminoBusqueda COLLATE SQL_Latin1_General_CP1_CI_AI + '%' 
         ORDER BY CHARINDEX(@TerminoBusqueda, KeyBusqueda COLLATE Latin1_General_CI_AI), KeyBusqueda
