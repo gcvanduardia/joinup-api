@@ -24,4 +24,7 @@ router.route('/getCursoDetail')
 router.route('/getListadoCursos')
     .get(auth, cursosController.buscarCursos);
 
+router.route('/getListadoCursosToolBar')
+    .get(auth, cursosController.buscarCursosToolBar);
+
 module.exports = router;
