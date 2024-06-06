@@ -99,6 +99,8 @@ exports.buscarCursosToolBar = async (req, res) => {
         });
 };
 
+
+
 exports.getCursoDetail = async (req, res) => {
     const { cursoId } = req.query;
 
@@ -241,6 +243,36 @@ exports.getRecursosSesion = async (req, res) => {
             res.status(500).json({ 
                 error: err,
                 message: 'Error al intentar obtener los recursos de la sesión' 
+            });
+        });
+};
+
+exports.getUserProgress = async (req, res) => {
+    const { IdUsuario, IdSesion } = req.query;
+
+    if (!IdUsuario || !IdSesion) {
+        return res.status(400).json({ message: 'IdUsuario e IdSesion son requeridos' });
+    }
+
+    const request = new sql.Request();
+    request.input('IdUsuario', sql.Int, IdUsuario);
+    request.input('IdSesion', sql.Int, IdSesion);
+    const sql_str = `
+        SELECT Completada FROM vw_UsuarioHistorialCursos 
+        WHERE IdUsuario = @IdUsuario AND IdSesion = @IdSesion;
+    `;
+    request.query(sql_str)
+        .then((result) => {
+            res.status(200).json({ 
+                data: result.recordset[0],
+                message: 'Progreso del usuario obtenido correctamente' 
+            });
+        })
+        .catch((err) => {
+            console.error('getProgresoUsuario Error: ',err);
+            res.status(500).json({ 
+                error: err,
+                message: 'Error al intentar obtener el progreso del usuario' 
             });
         });
 };

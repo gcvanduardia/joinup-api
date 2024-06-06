@@ -3,6 +3,9 @@ const router = express.Router();
 const cursosController = require('../controllers/cursos');
 const auth = require('../middleware/jwt');
 
+router.route('/getUserProgress')
+    .get(auth, cursosController.getUserProgress);
+
 router.route('/getRecursosSesion')
     .get(auth, cursosController.getRecursosSesion);
 
