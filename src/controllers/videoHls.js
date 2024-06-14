@@ -10,8 +10,6 @@ exports.streamVideoHlsFromS3 = async (req, res) => {
         Key: `cursos/${curso}/${folder}/${video}`
     };
 
-    console.log('streamParams:', streamParams);
-
     try {
         const streamData = await s3Client.send(new GetObjectCommand(streamParams));
         const contentType = streamData.ContentType;
