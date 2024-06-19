@@ -276,3 +276,59 @@ exports.getUserProgress = async (req, res) => {
             });
         });
 };
+
+exports.updateOrCreateHistorialCurso = async (req, res) => {
+    const { IdUsuario, IdCurso, IdSesion, MinutoActual, ProgresoSesion, ProgresoCurso, Completada } = req.body;
+
+    if (IdUsuario === undefined || IdCurso === undefined || IdSesion === undefined || MinutoActual === undefined || ProgresoSesion === undefined || ProgresoCurso === undefined || Completada === undefined) {
+        return res.status(400).json({ message: 'Todos los campos son requeridos' });
+    }
+
+    const request = new sql.Request();
+    request.input('IdUsuario', sql.Int, IdUsuario);
+    request.input('IdCurso', sql.Int, IdCurso);
+    request.input('IdSesion', sql.Int, IdSesion);
+    request.input('MinutoActual', sql.Int, MinutoActual);
+    request.input('ProgresoSesion', sql.Float, ProgresoSesion);
+    request.input('ProgresoCurso', sql.Float, ProgresoCurso);
+    request.input('Completada', sql.Bit, Completada);
+
+    const sql_str_check = `
+        SELECT * FROM HistorialCursos 
+        WHERE IdUsuario = @IdUsuario AND IdCurso = @IdCurso AND IdSesion = @IdSesion;
+    `;
+
+    const sql_str_update = `
+        UPDATE HistorialCursos 
+        SET MinutoActual = @MinutoActual, ProgresoSesion = @ProgresoSesion, ProgresoCurso = @ProgresoCurso, Completada = @Completada
+        WHERE IdUsuario = @IdUsuario AND IdCurso = @IdCurso AND IdSesion = @IdSesion;
+    `;
+
+    const sql_str_insert = `
+        INSERT INTO HistorialCursos (IdHistorial, IdUsuario, IdCurso, IdSesion, MinutoActual, ProgresoSesion, ProgresoCurso, Completada)
+        VALUES ((SELECT MAX(IdHistorial)+1 FROM HistorialCursos), @IdUsuario, @IdCurso, @IdSesion, @MinutoActual, @ProgresoSesion, @ProgresoCurso, @Completada);
+    `;
+
+    request.query(sql_str_check)
+        .then((result) => {
+            if (result.recordset.length > 0) {
+                // Si el registro existe, lo actualizamos
+                return request.query(sql_str_update);
+            } else {
+                // Si el registro no existe, lo creamos
+                return request.query(sql_str_insert);
+            }
+        })
+        .then(() => {
+            res.status(200).json({ 
+                message: 'Registro actualizado o creado correctamente' 
+            });
+        })
+        .catch((err) => {
+            console.error('updateOrCreateHistorialCurso Error: ',err);
+            res.status(500).json({ 
+                error: err,
+                message: 'Error al intentar actualizar o crear el registro' 
+            });
+        });
+};

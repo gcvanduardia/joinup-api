@@ -30,4 +30,6 @@ router.route('/getListadoCursos')
 router.route('/getListadoCursosToolBar')
     .get(auth, cursosController.buscarCursosToolBar);
 
+router.route('/updateOrCreateHistorialCurso')
+    .post(auth, cursosController.updateOrCreateHistorialCurso);
 module.exports = router;
