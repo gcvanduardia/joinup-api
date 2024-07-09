@@ -258,7 +258,7 @@ exports.getUserProgress = async (req, res) => {
     request.input('IdUsuario', sql.Int, IdUsuario);
     request.input('IdSesion', sql.Int, IdSesion);
     const sql_str = `
-        SELECT Completada FROM vw_UsuarioHistorialCursos 
+        SELECT Completada, ProgresoSesion FROM vw_UsuarioHistorialCursos 
         WHERE IdUsuario = @IdUsuario AND IdSesion = @IdSesion;
     `;
     request.query(sql_str)
@@ -289,7 +289,7 @@ exports.updateOrCreateHistorialCurso = async (req, res) => {
     request.input('IdCurso', sql.Int, IdCurso);
     request.input('IdSesion', sql.Int, IdSesion);
     request.input('MinutoActual', sql.Int, MinutoActual);
-    request.input('ProgresoSesion', sql.Float, ProgresoSesion);
+    request.input('ProgresoSesion', sql.Int, ProgresoSesion);
     request.input('ProgresoCurso', sql.Float, ProgresoCurso);
     request.input('Completada', sql.Bit, Completada);
 
