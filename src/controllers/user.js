@@ -28,7 +28,8 @@ exports.historialCursos = async (req, res) => {
     const sql_str = `
         WITH CursosRanking AS (
             SELECT 
-                IdCurso, 
+                IdCurso,
+                ProgresoCurso,
                 NombreCurso, 
                 ImagenCurso,
                 FechaUltimoAcceso,
@@ -39,7 +40,8 @@ exports.historialCursos = async (req, res) => {
                 IdUsuario=@IdUsuario
         )
         SELECT 
-            IdCurso, 
+            IdCurso,
+            ProgresoCurso,
             NombreCurso, 
             ImagenCurso,
             FechaUltimoAcceso AS fechaReciente
