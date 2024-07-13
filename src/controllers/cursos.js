@@ -99,8 +99,6 @@ exports.buscarCursosToolBar = async (req, res) => {
         });
 };
 
-
-
 exports.getCursoDetail = async (req, res) => {
     const { cursoId } = req.query;
 
@@ -258,7 +256,7 @@ exports.getUserProgress = async (req, res) => {
     request.input('IdUsuario', sql.Int, IdUsuario);
     request.input('IdSesion', sql.Int, IdSesion);
     const sql_str = `
-        SELECT Completada, ProgresoSesion FROM vw_UsuarioHistorialCursos 
+        SELECT Completada, ProgresoSesion, MinutoActual FROM vw_UsuarioHistorialCursos 
         WHERE IdUsuario = @IdUsuario AND IdSesion = @IdSesion;
     `;
     request.query(sql_str)
@@ -329,6 +327,52 @@ exports.updateOrCreateHistorialCurso = async (req, res) => {
             res.status(500).json({ 
                 error: err,
                 message: 'Error al intentar actualizar o crear el registro' 
+            });
+        });
+};
+
+exports.getUserCourseProgress = async (req, res) => {
+    const { IdUsuario, IdCurso } = req.query;
+
+    if (!IdUsuario || !IdCurso) {
+        return res.status(400).json({ message: 'IdUsuario y IdCurso son requeridos' });
+    }
+
+    const request = new sql.Request();
+    request.input('IdUsuario', sql.Int, IdUsuario);
+    request.input('IdCurso', sql.Int, IdCurso);
+
+    const sql_str = `
+        DECLARE @TotalProgresoSesion INT;
+        DECLARE @HorasVideo INT;
+        
+        -- Obtener la suma de ProgresoSesion
+        SELECT @TotalProgresoSesion = SUM(ProgresoSesion)
+        FROM HistorialCursos
+        WHERE IdUsuario = @IdUsuario AND IdCurso = @IdCurso;
+        
+        -- Obtener las HorasVideo del curso
+        SELECT @HorasVideo = HorasVideo
+        FROM Cursos
+        WHERE CursoId = @IdCurso;
+
+        -- Calcular el progreso total del curso
+        SELECT 
+            (@TotalProgresoSesion / (@HorasVideo * 60.0)) * 100 AS ProgresoTotalCurso;
+    `;
+
+    request.query(sql_str)
+        .then((result) => {
+            res.status(200).json({ 
+                progreso: result.recordset[0].ProgresoTotalCurso,
+                message: 'Progreso del curso obtenido correctamente' 
+            });
+        })
+        .catch((err) => {
+            console.error('getUserCourseProgress Error: ', err);
+            res.status(500).json({ 
+                error: err,
+                message: 'Error al intentar obtener el progreso del curso' 
             });
         });
 };
