@@ -304,7 +304,7 @@ exports.updateOrCreateHistorialCurso = async (req, res) => {
 
     const sql_str_insert = `
         INSERT INTO HistorialCursos (IdHistorial, IdUsuario, IdCurso, IdSesion, MinutoActual, ProgresoSesion, ProgresoCurso, Completada)
-        VALUES ((SELECT MAX(IdHistorial)+1 FROM HistorialCursos), @IdUsuario, @IdCurso, @IdSesion, @MinutoActual, @ProgresoSesion, @ProgresoCurso, @Completada);
+        VALUES (ISNULL((SELECT MAX(IdHistorial) + 1 FROM HistorialCursos), 1), @IdUsuario, @IdCurso, @IdSesion, @MinutoActual, @ProgresoSesion, @ProgresoCurso, @Completada);
     `;
 
     request.query(sql_str_check)
@@ -323,7 +323,7 @@ exports.updateOrCreateHistorialCurso = async (req, res) => {
             });
         })
         .catch((err) => {
-            console.error('updateOrCreateHistorialCurso Error: ',err);
+            console.error('updateOrCreateHistorialCurso Error: ', err);
             res.status(500).json({ 
                 error: err,
                 message: 'Error al intentar actualizar o crear el registro' 

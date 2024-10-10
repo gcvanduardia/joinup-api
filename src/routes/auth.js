@@ -12,4 +12,8 @@ router.route('/verifyToken')
 router.route('/register')
     .post(authController.register);
 
+// Nueva ruta para actualizar el perfil del usuario
+router.route('/updateUserProfile')
+    .post(auth, authController.updateUserProfile); // Aplica el middleware de autenticación
+
 module.exports = router;
