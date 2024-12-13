@@ -35,4 +35,7 @@ router.route('/updateOrCreateHistorialCurso')
 
 router.route('/getUserCourseProgress')
     .get(auth, cursosController.getUserCourseProgress);
+
+router.route('/getCursoEnVivo')
+    .get(auth, cursosController.getCursoEnVivo);
 module.exports = router;

@@ -376,3 +376,39 @@ exports.getUserCourseProgress = async (req, res) => {
             });
         });
 };
+
+exports.getCursoEnVivo = async (req, res) => {
+    const { CursoId } = req.query;
+
+    if (!CursoId) {
+        return res.status(400).json({ message: 'CursoId es requerido' });
+    }
+
+    const request = new sql.Request();
+    request.input('CursoId', sql.Int, CursoId);
+
+    const sql_str = `
+        SELECT * FROM CursosEnVivo WHERE CursoId = @CursoId;
+    `;
+
+    request.query(sql_str)
+        .then((result) => {
+            if (result.recordset.length > 0) {
+                res.status(200).json({ 
+                    data: result.recordset[0],
+                    message: 'Curso en vivo obtenido correctamente' 
+                });
+            } else {
+                res.status(404).json({ 
+                    message: 'Curso en vivo no encontrado' 
+                });
+            }
+        })
+        .catch((err) => {
+            console.error('getCursosEnVivo Error: ', err);
+            res.status(500).json({ 
+                error: err,
+                message: 'Error al intentar obtener el curso en vivo' 
+            });
+        });
+};

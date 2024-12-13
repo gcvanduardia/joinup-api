@@ -8,7 +8,7 @@ exports.logIn = async (req, res) => {
     // Use parameters to prevent SQL injection
     request.input('username', sql.NVarChar, username);
     request.input('password', sql.NVarChar, password);
-    const sql_str = `SELECT ISNULL( (SELECT IdUsuario FROM Users WHERE Enable=1 AND Email=@username AND Password=@password), 0 ) AS IdUsuario;`;
+    const sql_str = `SELECT ISNULL( (SELECT IdUsuario FROM Usuarios WHERE Enable=1 AND Email=@username AND Password=@password), 0 ) AS IdUsuario;`;
 
     request.query(sql_str)
         .then((result) => {
@@ -63,7 +63,7 @@ exports.register = async (req, res) => {
     const request = new sql.Request();
 
     // Primero, verifica si el usuario ya existe
-    const checkUserQuery = `SELECT * FROM Users WHERE Email = @email OR Documento = @documento`;
+    const checkUserQuery = `SELECT * FROM Usuarios WHERE Email = @email OR Documento = @documento`;
 
     request.input('email', sql.NVarChar, email);
     request.input('documento', sql.NVarChar, documento);
@@ -80,7 +80,7 @@ exports.register = async (req, res) => {
                 request.input('celular', sql.NVarChar, telefono);
                 request.input('pass', sql.NVarChar, password);
 
-                const sql_str = `INSERT INTO Users (IdUsuario, Nombres, Apellidos, Email, Documento, Celular, Password, Enable) VALUES ((SELECT MAX(IdUsuario)+1 FROM Users),@nombres, @apellidos, @email, @documento, @celular, @pass, 1)`;
+                const sql_str = `INSERT INTO Usuarios (IdUsuario, Nombres, Apellidos, Email, Documento, Celular, Password, Enable) VALUES ((SELECT MAX(IdUsuario)+1 FROM Usuarios),@nombres, @apellidos, @email, @documento, @celular, @pass, 1)`;
 
                 request.query(sql_str)
                     .then(() => {
