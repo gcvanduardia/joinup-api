@@ -83,6 +83,7 @@ exports.register = async (req, res) => {
                 request.input('Apellidos', sql.NVarChar, apellidos);
                 request.input('Password', sql.NVarChar, password);
 
+
                 const sql_str = `
                     INSERT INTO Usuarios (Nombres, Apellidos, Email, Password, Enable, IdRol)
                     OUTPUT INSERTED.IdUsuario
