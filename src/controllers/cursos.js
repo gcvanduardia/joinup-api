@@ -412,3 +412,41 @@ exports.getCursoEnVivo = async (req, res) => {
             });
         });
 };
+
+exports.checkCursoUsuario = async (req, res) => {
+    const { IdCurso, IdUsuario } = req.query;
+
+    if (!IdCurso || !IdUsuario) {
+        const response = { message: 'IdCurso e IdUsuario son requeridos' };
+        console.log(response);
+        return res.status(400).json(response);
+    }
+
+    const request = new sql.Request();
+    request.input('IdCurso', sql.Int, IdCurso);
+    request.input('IdUsuario', sql.Int, IdUsuario);
+
+    const sql_str = `
+        SELECT COUNT(*) AS count FROM CursosUsuarios WHERE IdCurso = @IdCurso AND IdUsuario = @IdUsuario;
+    `;
+
+    request.query(sql_str)
+        .then((result) => {
+            const exists = result.recordset[0].count > 0;
+            const response = { 
+                exists: exists,
+                message: 'Comprobación realizada correctamente' 
+            };
+            console.log(response);
+            res.status(200).json(response);
+        })
+        .catch((err) => {
+            const response = { 
+                error: err,
+                message: 'Error al intentar comprobar el registro' 
+            };
+            console.error('checkCursoUsuario Error: ', err);
+            console.log(response);
+            res.status(500).json(response);
+        });
+};
