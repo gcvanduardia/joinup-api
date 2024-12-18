@@ -304,7 +304,7 @@ exports.updateOrCreateHistorialCurso = async (req, res) => {
 
     const sql_str_insert = `
         INSERT INTO HistorialCursos (IdHistorial, IdUsuario, IdCurso, IdSesion, MinutoActual, ProgresoSesion, ProgresoCurso, Completada)
-        VALUES ((SELECT MAX(IdHistorial)+1 FROM HistorialCursos), @IdUsuario, @IdCurso, @IdSesion, @MinutoActual, @ProgresoSesion, @ProgresoCurso, @Completada);
+        VALUES (ISNULL((SELECT MAX(IdHistorial) + 1 FROM HistorialCursos), 1), @IdUsuario, @IdCurso, @IdSesion, @MinutoActual, @ProgresoSesion, @ProgresoCurso, @Completada);
     `;
 
     request.query(sql_str_check)
@@ -323,7 +323,7 @@ exports.updateOrCreateHistorialCurso = async (req, res) => {
             });
         })
         .catch((err) => {
-            console.error('updateOrCreateHistorialCurso Error: ',err);
+            console.error('updateOrCreateHistorialCurso Error: ', err);
             res.status(500).json({ 
                 error: err,
                 message: 'Error al intentar actualizar o crear el registro' 
@@ -374,5 +374,79 @@ exports.getUserCourseProgress = async (req, res) => {
                 error: err,
                 message: 'Error al intentar obtener el progreso del curso' 
             });
+        });
+};
+
+exports.getCursoEnVivo = async (req, res) => {
+    const { CursoId } = req.query;
+
+    if (!CursoId) {
+        return res.status(400).json({ message: 'CursoId es requerido' });
+    }
+
+    const request = new sql.Request();
+    request.input('CursoId', sql.Int, CursoId);
+
+    const sql_str = `
+        SELECT * FROM CursosEnVivo WHERE CursoId = @CursoId;
+    `;
+
+    request.query(sql_str)
+        .then((result) => {
+            if (result.recordset.length > 0) {
+                res.status(200).json({ 
+                    data: result.recordset[0],
+                    message: 'Curso en vivo obtenido correctamente' 
+                });
+            } else {
+                res.status(404).json({ 
+                    message: 'Curso en vivo no encontrado' 
+                });
+            }
+        })
+        .catch((err) => {
+            console.error('getCursosEnVivo Error: ', err);
+            res.status(500).json({ 
+                error: err,
+                message: 'Error al intentar obtener el curso en vivo' 
+            });
+        });
+};
+
+exports.checkCursoUsuario = async (req, res) => {
+    const { IdCurso, IdUsuario } = req.query;
+
+    if (!IdCurso || !IdUsuario) {
+        const response = { message: 'IdCurso e IdUsuario son requeridos' };
+        console.log(response);
+        return res.status(400).json(response);
+    }
+
+    const request = new sql.Request();
+    request.input('IdCurso', sql.Int, IdCurso);
+    request.input('IdUsuario', sql.Int, IdUsuario);
+
+    const sql_str = `
+        SELECT COUNT(*) AS count FROM CursosUsuarios WHERE IdCurso = @IdCurso AND IdUsuario = @IdUsuario;
+    `;
+
+    request.query(sql_str)
+        .then((result) => {
+            const exists = result.recordset[0].count > 0;
+            const response = { 
+                exists: exists,
+                message: 'Comprobación realizada correctamente' 
+            };
+            console.log(response);
+            res.status(200).json(response);
+        })
+        .catch((err) => {
+            const response = { 
+                error: err,
+                message: 'Error al intentar comprobar el registro' 
+            };
+            console.error('checkCursoUsuario Error: ', err);
+            console.log(response);
+            res.status(500).json(response);
         });
 };
