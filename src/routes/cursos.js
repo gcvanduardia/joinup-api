@@ -41,4 +41,5 @@ router.route('/getCursoEnVivo')
 
 router.route('/checkCursoUsuario')
     .get(auth, cursosController.checkCursoUsuario);
+
 module.exports = router;
