@@ -21,8 +21,14 @@ router.route('/getListadoSesiones')
 router.route('/getCursosPaginated')
     .get(auth, cursosController.getCursosPaginated);
 
+router.route('/getCursosPaginatedPublic')
+    .get(cursosController.getCursosPaginated);
+
 router.route('/getCursoDetail')
     .get(auth, cursosController.getCursoDetail);
+
+router.route('/getCursoDetailPublic')
+    .get(cursosController.getCursoDetail);
 
 router.route('/getListadoCursos')
     .get(auth, cursosController.buscarCursos);
