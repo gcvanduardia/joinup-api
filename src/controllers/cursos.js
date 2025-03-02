@@ -394,7 +394,7 @@ exports.getCursoEnVivo = async (req, res) => {
     let sql_str;
     if (Rol == 1) {
         sql_str = `
-            SELECT RoomCodeAdmin, HoraProgramada FROM CursosEnVivo WHERE CursoId = @CursoId;
+            SELECT RoomCodeHost, HoraProgramada FROM CursosEnVivo WHERE CursoId = @CursoId;
         `;
     } else if (Rol == 2) {
         sql_str = `
