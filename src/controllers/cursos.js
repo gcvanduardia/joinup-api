@@ -378,18 +378,31 @@ exports.getUserCourseProgress = async (req, res) => {
 };
 
 exports.getCursoEnVivo = async (req, res) => {
-    const { CursoId } = req.query;
+    const { CursoId, Rol } = req.query;
 
     if (!CursoId) {
         return res.status(400).json({ message: 'CursoId es requerido' });
     }
 
+    if (!Rol) {
+        return res.status(400).json({ message: 'Rol es requerido' });
+    }
+
     const request = new sql.Request();
     request.input('CursoId', sql.Int, CursoId);
 
-    const sql_str = `
-        SELECT * FROM CursosEnVivo WHERE CursoId = @CursoId;
-    `;
+    let sql_str;
+    if (Rol == 1) {
+        sql_str = `
+            SELECT RoomCodeAdmin, HoraProgramada FROM CursosEnVivo WHERE CursoId = @CursoId;
+        `;
+    } else if (Rol == 2) {
+        sql_str = `
+            SELECT RoomCodeGuest, HoraProgramada FROM CursosEnVivo WHERE CursoId = @CursoId;
+        `;
+    } else {
+        return res.status(400).json({ message: 'Rol no válido' });
+    }
 
     request.query(sql_str)
         .then((result) => {
