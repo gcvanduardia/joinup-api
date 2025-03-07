@@ -10,8 +10,8 @@ exports.logIn = async (req, res) => {
     request.input('password', sql.NVarChar, password);
     const sql_str = `
         SELECT 
-            ISNULL((SELECT IdUsuario FROM Usuarios WHERE Enable=1 AND Email=@username AND Password=@password), 0) AS IdUsuario,
-            (SELECT UserName FROM Usuarios WHERE Enable=1 AND Email=@username AND Password=@password) AS UserName
+            ISNULL((SELECT IdUsuario FROM Users WHERE Enable=1 AND Email=@username AND Password=@password), 0) AS IdUsuario,
+            (SELECT UserName FROM Users WHERE Enable=1 AND Email=@username AND Password=@password) AS UserName
     `;
 
     request.query(sql_str)
@@ -68,7 +68,7 @@ exports.register = async (req, res) => {
     const request = new sql.Request();
 
     // Primero, verifica si el usuario ya existe
-    const checkUserQuery = `SELECT * FROM Usuarios WHERE Email = @Email`;
+    const checkUserQuery = `SELECT * FROM Users WHERE Email = @Email`;
 
     request.input('Email', sql.NVarChar, email);
     
@@ -85,7 +85,7 @@ exports.register = async (req, res) => {
 
 
                 const sql_str = `
-                    INSERT INTO Usuarios (Nombres, Apellidos, Email, Password, Enable, IdRol)
+                    INSERT INTO Users (Nombres, Apellidos, Email, Password, Enable, IdRol)
                     OUTPUT INSERTED.IdUsuario
                     VALUES (@Nombres, @Apellidos, @Email, @Password, 1, 3)
                 `;
@@ -128,7 +128,7 @@ exports.updateUserProfile = async (req, res) => {
 
     // Actualiza el registro del usuario
     const sql_str = `
-        UPDATE Usuarios
+        UPDATE Users
         SET UserName = @UserName, Avatar = @Avatar
         WHERE IdUsuario = @IdUsuario
     `;
