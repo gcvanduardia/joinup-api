@@ -463,3 +463,68 @@ exports.checkCursoUsuario = async (req, res) => {
             res.status(500).json(response);
         });
 };
+
+exports.userLiveTracker = async (req, res) => {
+    const { IdUsuario, connected, accion } = req.query;
+
+    if (!IdUsuario || !accion) {
+        return res.status(400).json({ message: 'IdUsuario y accion son requeridos' });
+    }
+
+    const request = new sql.Request();
+    request.input('IdUsuario', sql.Int, IdUsuario);
+
+    if (accion === 'leer') {
+        // Leer el campo actual
+        const sql_str_leer = `
+            SELECT isConnected FROM Users WHERE IdUsuario = @IdUsuario;
+        `;
+
+        try {
+            const result = await request.query(sql_str_leer);
+            if (result.recordset.length > 0) {
+                const isConnected = result.recordset[0].isConnected;
+                res.status(200).json({ 
+                    data: { isConnected: isConnected },
+                    message: 'Campo leído correctamente' 
+                });
+            } else {
+                res.status(404).json({ message: 'Usuario no encontrado' });
+            }
+        } catch (err) {
+            console.error('userLiveTracker Error: ', err);
+            res.status(500).json({ 
+                error: err,
+                message: 'Error al intentar leer el campo' 
+            });
+        }
+    } else if (accion === 'editar') {
+        if (connected === undefined) {
+            return res.status(400).json({ message: 'connected es requerido para editar' });
+        }
+
+        // Editar el campo
+        const sql_str_editar = `
+            UPDATE Users 
+            SET isConnected = @connected 
+            WHERE IdUsuario = @IdUsuario;
+        `;
+        request.input('connected', sql.Bit, connected);
+
+        try {
+            await request.query(sql_str_editar);
+            res.status(200).json({ 
+                message: 'Campo actualizado correctamente', 
+                isConnected: connected 
+            });
+        } catch (err) {
+            console.error('userLiveTracker Error: ', err);
+            res.status(500).json({ 
+                error: err,
+                message: 'Error al intentar actualizar el campo' 
+            });
+        }
+    } else {
+        res.status(400).json({ message: 'Acción no válida' });
+    }
+};
