@@ -503,19 +503,22 @@ exports.userLiveTracker = async (req, res) => {
             return res.status(400).json({ message: 'connected es requerido para editar' });
         }
 
+        // Convertir el valor de connected a booleano
+        const connectedValue = connected === 'true' || connected === '1' ? 1 : 0;
+
         // Editar el campo
         const sql_str_editar = `
             UPDATE Users 
             SET isConnected = @connected 
             WHERE IdUsuario = @IdUsuario;
         `;
-        request.input('connected', sql.Bit, connected);
+        request.input('connected', sql.Bit, connectedValue);
 
         try {
             await request.query(sql_str_editar);
             res.status(200).json({ 
                 message: 'Campo actualizado correctamente', 
-                isConnected: connected 
+                isConnected: connectedValue 
             });
         } catch (err) {
             console.error('userLiveTracker Error: ', err);
