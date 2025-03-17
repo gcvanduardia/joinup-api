@@ -394,11 +394,11 @@ exports.getCursoEnVivo = async (req, res) => {
     let sql_str;
     if (Rol == 1) {
         sql_str = `
-            SELECT RoomCodeHost, HoraProgramada FROM CursosEnVivo WHERE CursoId = @CursoId;
+            SELECT RoomCodeHost FROM CursosEnVivo WHERE CursoId = @CursoId;
         `;
     } else if (Rol == 2) {
         sql_str = `
-            SELECT RoomCodeGuest, HoraProgramada FROM CursosEnVivo WHERE CursoId = @CursoId;
+            SELECT RoomCodeGuest FROM CursosEnVivo WHERE CursoId = @CursoId;
         `;
     } else {
         return res.status(400).json({ message: 'Rol no válido' });
