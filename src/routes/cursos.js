@@ -34,7 +34,7 @@ router.route('/getListadoCursos')
     .get(auth, cursosController.buscarCursos);
 
 router.route('/getListadoCursosToolBar')
-    .get(auth, cursosController.buscarCursosToolBar);
+    .get(cursosController.buscarCursosToolBar);
 
 router.route('/updateOrCreateHistorialCurso')
     .post(auth, cursosController.updateOrCreateHistorialCurso);
