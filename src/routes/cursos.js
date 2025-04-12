@@ -51,5 +51,8 @@ router.route('/checkCursoUsuario')
 router.route('/userLiveTracker')
     .get(auth, cursosController.userLiveTracker);
 
+router.route('/getCursosPaginatedByCategoriaPublic')
+    .get(cursosController.getCursosPaginatedByCategoria);
+
 
 module.exports = router;
