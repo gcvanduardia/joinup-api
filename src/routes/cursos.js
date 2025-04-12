@@ -31,7 +31,7 @@ router.route('/getCursoDetailPublic')
     .get(cursosController.getCursoDetail);
 
 router.route('/getListadoCursos')
-    .get(auth, cursosController.buscarCursos);
+    .get(cursosController.buscarCursos);
 
 router.route('/getListadoCursosToolBar')
     .get(cursosController.buscarCursosToolBar);
