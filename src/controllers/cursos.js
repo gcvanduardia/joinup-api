@@ -31,6 +31,50 @@ exports.getCursosPaginated = async (req, res) => {
         });
 };
 
+exports.getCursosPaginatedByCategoria = async (req, res) => {
+    const { pageSize, pageNumber, CategoriaId } = req.query;
+
+    if (!pageSize || !pageNumber || !CategoriaId) {
+        return res.status(400).json({ message: 'pageSize, pageNumber y CategoriaId son requeridos' });
+    }
+
+    try {
+        const request = new sql.Request();
+        request.input('PageSize', sql.Int, pageSize);
+        request.input('PageNumber', sql.Int, pageNumber);
+        request.input('CategoriaId', sql.Int, CategoriaId);
+
+        const sql_str = `
+            SELECT * FROM vw_EncabezadoCursos 
+            WHERE CategoriaId = @CategoriaId
+            ORDER BY CursoId ASC 
+            OFFSET (@PageNumber - 1) * @PageSize ROWS 
+            FETCH NEXT @PageSize ROWS ONLY;
+        `;
+
+        const result = await request.query(sql_str);
+        const cursos = result.recordset;
+
+        let nombreCategoria = null;
+        if (cursos.length > 0) {
+            nombreCategoria = cursos[0].NombreCategoria;
+        }
+
+        res.status(200).json({ 
+            data: cursos,
+            nombreCategoria: nombreCategoria,
+            message: 'Cursos obtenidos correctamente' 
+        });
+    } catch (err) {
+        console.error('getCursosPaginatedByCategoria Error: ', err);
+        res.status(500).json({ 
+            error: err,
+            message: 'Error al intentar obtener los cursos' 
+        });
+    }
+};
+
+
 exports.buscarCursos = async (req, res) => {
     const terminoBusqueda = req.query.terminoBusqueda || '';
     const pageNumber = req.query.pageNumber || 1;
