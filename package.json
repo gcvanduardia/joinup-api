@@ -5,10 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/index.js",
-    "dev": "node src/index.js",
-    "build": "echo 'No build step required for Node.js'",
-    "health-check": "curl -f http://localhost:3000/greeting || exit 1"
+    "start": "node src/index.js"
   },
   "keywords": [],
   "author": "",
